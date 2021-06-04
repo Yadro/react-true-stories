@@ -1,0 +1,35 @@
+{
+  "name": "react-true-stories",
+  "version": "0.0.0",
+  "description": "Instagram stories on react",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack serve --config webpack/webpack.dev.js",
+    "build": "webpack --config webpack/webpack.dev.js",
+    "prod": "webpack --config webpack/webpack.prod.js",
+    "lint": "eslint src/**/*.ts src/**/*.tsx"
+  },
+  "dependencies": {
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "4.26.0",
+    "@typescript-eslint/parser": "4.26.0",
+    "copy-webpack-plugin": "9.0.0",
+    "css-loader": "5.2.6",
+    "eslint": "7.27.0",
+    "file-loader": "6.2.0",
+    "html-webpack-plugin": "5.3.1",
+    "prettier": "2.3.0",
+    "style-loader": "2.0.0",
+    "ts-loader": "9.2.2",
+    "typescript": "4.3.2",
+    "webpack": "5.38.1",
+    "webpack-cli": "4.7.0",
+    "webpack-dev-server": "3.11.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
