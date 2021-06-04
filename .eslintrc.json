@@ -18,6 +18,7 @@
   "plugins": [
     "@typescript-eslint"
   ],
+  "ignorePatterns": ["webpack"],
   "rules": {
     "quotes": [
       "error",
