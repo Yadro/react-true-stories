@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: './playground/index.tsx',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].js',
@@ -34,11 +34,11 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: './playground/index.html',
       inject: 'body',
     }),
     new CopyPlugin({
-      patterns: [{ from: path.resolve('src', 'assets'), to: 'assets' }],
+      patterns: [{ from: path.resolve('playground', 'assets'), to: 'assets' }],
     }),
   ],
 };

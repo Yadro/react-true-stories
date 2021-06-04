@@ -23,6 +23,7 @@
     "quotes": [
       "error",
       "single"
-    ]
+    ],
+    "@typescript-eslint/no-empty-interface": 0
   }
 }
