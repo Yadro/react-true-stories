@@ -1,5 +1,6 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
+import clsx from 'clsx';
 
 interface IProgressArrayProps {
   num: number;
@@ -9,16 +10,29 @@ interface IProgressArrayProps {
 }
 
 const ProgressArray: React.FC<IProgressArrayProps> = props => {
-  const { num, active } = props;
+  const { num, active, isPause } = props;
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      {new Array(num).fill(true).map((i, index) => (
-        <div key={index} className={classes.progressContainer}>
-          <div className={classes.progress} />
-        </div>
-      ))}
+      {new Array(num).fill(true).map((i, index) => {
+        const isActive = active === index;
+        const isFilled = index < active;
+        const isEmpty = index > active;
+        return (
+          <div key={index} className={classes.progressContainer}>
+            <div
+              className={clsx({
+                [classes.progress]: true,
+                [classes.progressFilled]: isFilled,
+                [classes.animation]: isActive,
+                [classes.animationPause]: isActive && isPause,
+                [classes.progressEmpty]: isEmpty,
+              })}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -35,7 +49,18 @@ const useStyles = createUseStyles({
   progress: {
     height: 2,
     backgroundColor: 'white',
-    animation: '$slideRight 1s linear',
+  },
+  progressFilled: {
+    width: '100%',
+  },
+  progressEmpty: {
+    width: 0,
+  },
+  animation: {
+    animation: '$slideRight 10s linear',
+  },
+  animationPause: {
+    animationPlayState: 'paused',
   },
   '@keyframes slideRight': {
     from: {
