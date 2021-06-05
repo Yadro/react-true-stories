@@ -43,7 +43,7 @@ const Story: React.FC<IStoryProps> = props => {
     <div className={classes.root}>
       <Background>
         <button onClick={changeIndex(-1)}>{'<'}</button>
-        <div>
+        <div className={classes.imageContainer}>
           <ProgressArray num={stories.length} active={activeIndex} duration={1000} isPause={pause} />
           <img
             key={activeIndex}
@@ -63,6 +63,9 @@ const Story: React.FC<IStoryProps> = props => {
 
 const useStyles = createUseStyles({
   root: {},
+  imageContainer: {
+    position: 'relative',
+  },
   image: (props: IStyleProps) => ({
     height: props.height,
     width: props.width,

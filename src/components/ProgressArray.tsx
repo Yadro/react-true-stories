@@ -14,13 +14,13 @@ const ProgressArray: React.FC<IProgressArrayProps> = props => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={classes.container}>
       {new Array(num).fill(true).map((i, index) => {
         const isActive = active === index;
         const isFilled = index < active;
         const isEmpty = index > active;
         return (
-          <div key={index} className={classes.progressContainer}>
+          <div key={index} className={classes.progressItemContainer}>
             <div
               className={clsx({
                 [classes.progress]: true,
@@ -38,13 +38,26 @@ const ProgressArray: React.FC<IProgressArrayProps> = props => {
 };
 
 const useStyles = createUseStyles({
-  root: {
-    // position: 'absolute',
+  container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
     display: 'flex',
+    margin: '16px 20px',
   },
-  progressContainer: {
+  progressItemContainer: {
     flex: 1,
     height: 2,
+    marginLeft: 1,
+    marginRight: 1,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,.35)',
+    '&:first-child': {
+      marginLeft: 0,
+    },
+    '&:last-child': {
+      marginRight: 0,
+    },
   },
   progress: {
     height: 2,
