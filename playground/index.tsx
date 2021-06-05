@@ -13,7 +13,7 @@ const App: React.FC = () => {
         stories={stories}
         size={{
           height: 400,
-          width: 200,
+          width: 300,
         }}
       />
     </div>
