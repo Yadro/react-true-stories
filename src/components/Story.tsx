@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 
 import { IStory, Size } from '../types/StoryProps';
@@ -12,42 +12,106 @@ interface IStoryProps {
 
 interface IStyleProps extends Size {}
 
+const defaultDurationMs = 5 * 1000;
+
 const Story: React.FC<IStoryProps> = props => {
   const { stories, size } = props;
   const classes = useStyles(size);
+  const storiesAmount = stories.length;
 
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [activeSlide, setActiveSlide] = useState<number>(0);
   const [pause, setPause] = useState<boolean>(false);
+  const timer = useRef<number>();
+  const playStartTime = useRef<number>();
+  const saveProgressTime = useRef<number>();
+
+  const changeActiveSlide = useCallback(
+    (move: -1 | 1) => {
+      setActiveSlide(activeSlide => {
+        const newIndex = activeSlide + move;
+
+        if (newIndex < 0 || newIndex > storiesAmount - 1) {
+          return activeSlide;
+        }
+
+        return newIndex;
+      });
+    },
+    [storiesAmount],
+  );
+
+  const startTimer = useCallback(
+    // passing the current activeSlide to keep the it up to date
+    (activeSlide: number, delayMs?: number) => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+
+      if (activeSlide < storiesAmount) {
+        playStartTime.current = new Date().getTime();
+        console.log('startTimer', playStartTime.current);
+        if (delayMs) {
+          console.log('continue', delayMs);
+        }
+
+        timer.current = window.setTimeout(() => {
+          if (activeSlide < storiesAmount) {
+            changeActiveSlide(1);
+            startTimer(activeSlide + 1);
+          }
+        }, delayMs || defaultDurationMs);
+      }
+    },
+    [changeActiveSlide, storiesAmount],
+  );
+
+  const changeActiveSlideWithSideEffect = useCallback(
+    (move: -1 | 1) => () => {
+      const newIndex = activeSlide + move;
+
+      if (newIndex < 0 || newIndex > storiesAmount - 1) {
+        return;
+      }
+
+      setActiveSlide(newIndex);
+      startTimer(newIndex);
+    },
+    [activeSlide, storiesAmount, startTimer],
+  );
+
+  useEffect(() => {
+    startTimer(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePause = () => {
-    console.log('handlePause');
+    // console.log('handlePause');
     setPause(true);
+
+    saveProgressTime.current = new Date().getTime() - playStartTime.current;
+    console.log('progress', new Date().getTime(), saveProgressTime.current);
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
   };
 
   const handlePlay = () => {
-    console.log('handlePlay');
+    // console.log('handlePlay');
     setPause(false);
-  };
 
-  const changeIndex = (move: -1 | 1) => () => {
-    const newIndex = activeIndex + move;
-
-    if (newIndex < 0 || newIndex > stories.length - 1) {
-      return;
-    }
-
-    setActiveIndex(activeIndex + move);
+    // console.log('rest', defaultDurationMs - saveProgressTime.current);
+    startTimer(activeSlide, defaultDurationMs - saveProgressTime.current);
   };
 
   return (
     <div className={classes.root}>
       <Background>
-        <button onClick={changeIndex(-1)}>{'<'}</button>
+        <button onClick={changeActiveSlideWithSideEffect(-1)}>{'<'}</button>
         <div className={classes.imageContainer}>
-          <ProgressArray num={stories.length} active={activeIndex} duration={1000} isPause={pause} />
+          <ProgressArray num={stories.length} active={activeSlide} duration={defaultDurationMs} isPause={pause} />
           <img
-            key={activeIndex}
-            src={stories[activeIndex]?.url}
+            key={activeSlide}
+            src={stories[activeSlide]?.url}
             className={classes.image}
             onTouchStart={handlePause}
             onMouseDown={handlePause}
@@ -55,7 +119,7 @@ const Story: React.FC<IStoryProps> = props => {
             onMouseUp={handlePlay}
           />
         </div>
-        <button onClick={changeIndex(1)}>{'>'}</button>
+        <button onClick={changeActiveSlideWithSideEffect(1)}>{'>'}</button>
       </Background>
     </div>
   );

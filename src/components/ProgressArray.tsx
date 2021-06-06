@@ -10,7 +10,7 @@ interface IProgressArrayProps {
 }
 
 const ProgressArray: React.FC<IProgressArrayProps> = props => {
-  const { num, active, isPause } = props;
+  const { num, active, isPause, duration } = props;
   const classes = useStyles();
 
   return (
@@ -29,6 +29,7 @@ const ProgressArray: React.FC<IProgressArrayProps> = props => {
                 [classes.animationPause]: isActive && isPause,
                 [classes.progressEmpty]: isEmpty,
               })}
+              style={{ animationDuration: `${duration}ms` }}
             />
           </div>
         );
@@ -70,7 +71,7 @@ const useStyles = createUseStyles({
     width: 0,
   },
   animation: {
-    animation: '$slideRight 10s linear',
+    animation: '$slideRight linear',
   },
   animationPause: {
     animationPlayState: 'paused',
