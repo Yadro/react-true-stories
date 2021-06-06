@@ -4,6 +4,7 @@ import { createUseStyles } from 'react-jss';
 import { IStory, Size } from '../types/StoryProps';
 import Background from './Background';
 import ProgressArray from './ProgressArray';
+import ProgressTimer from '../types/ProgressTimer';
 
 interface IStoryProps {
   stories: IStory[];
@@ -22,9 +23,7 @@ const Story: React.FC<IStoryProps> = props => {
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [pause, setPause] = useState<boolean>(false);
   const timer = useRef<number>();
-  const playStartTime = useRef<number>();
-  const saveProgressTime = useRef<number>();
-  const restProgressTime = useRef<number>();
+  const timerObj = useRef<ProgressTimer>(new ProgressTimer());
 
   const changeActiveSlide = useCallback(
     (move: -1 | 1) => {
@@ -51,8 +50,8 @@ const Story: React.FC<IStoryProps> = props => {
       if (activeSlide < storiesAmount) {
         const delay = delayMs || defaultDurationMs;
 
-        playStartTime.current = new Date().getTime();
-        restProgressTime.current = delay;
+        timerObj.current.setStartTime();
+        timerObj.current.setRestTime(delay);
 
         timer.current = window.setTimeout(() => {
           if (activeSlide < storiesAmount) {
@@ -87,7 +86,7 @@ const Story: React.FC<IStoryProps> = props => {
   const handlePause = () => {
     setPause(true);
 
-    saveProgressTime.current = new Date().getTime() - playStartTime.current;
+    timerObj.current.saveProgress();
     if (timer.current) {
       clearTimeout(timer.current);
     }
@@ -96,7 +95,7 @@ const Story: React.FC<IStoryProps> = props => {
   const handlePlay = () => {
     setPause(false);
 
-    startTimer(activeSlide, restProgressTime.current - saveProgressTime.current);
+    startTimer(activeSlide, timerObj.current.getRestTime());
   };
 
   return (
