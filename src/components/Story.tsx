@@ -24,6 +24,7 @@ const Story: React.FC<IStoryProps> = props => {
   const timer = useRef<number>();
   const playStartTime = useRef<number>();
   const saveProgressTime = useRef<number>();
+  const restProgressTime = useRef<number>();
 
   const changeActiveSlide = useCallback(
     (move: -1 | 1) => {
@@ -48,18 +49,17 @@ const Story: React.FC<IStoryProps> = props => {
       }
 
       if (activeSlide < storiesAmount) {
+        const delay = delayMs || defaultDurationMs;
+
         playStartTime.current = new Date().getTime();
-        console.log('startTimer', playStartTime.current);
-        if (delayMs) {
-          console.log('continue', delayMs);
-        }
+        restProgressTime.current = delay;
 
         timer.current = window.setTimeout(() => {
           if (activeSlide < storiesAmount) {
             changeActiveSlide(1);
             startTimer(activeSlide + 1);
           }
-        }, delayMs || defaultDurationMs);
+        }, delay);
       }
     },
     [changeActiveSlide, storiesAmount],
@@ -85,22 +85,18 @@ const Story: React.FC<IStoryProps> = props => {
   }, []);
 
   const handlePause = () => {
-    // console.log('handlePause');
     setPause(true);
 
     saveProgressTime.current = new Date().getTime() - playStartTime.current;
-    console.log('progress', new Date().getTime(), saveProgressTime.current);
     if (timer.current) {
       clearTimeout(timer.current);
     }
   };
 
   const handlePlay = () => {
-    // console.log('handlePlay');
     setPause(false);
 
-    // console.log('rest', defaultDurationMs - saveProgressTime.current);
-    startTimer(activeSlide, defaultDurationMs - saveProgressTime.current);
+    startTimer(activeSlide, restProgressTime.current - saveProgressTime.current);
   };
 
   return (
