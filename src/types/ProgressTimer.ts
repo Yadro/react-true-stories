@@ -1,25 +1,19 @@
 export default class ProgressTimer {
   private startTime: number;
-  private saveProgressTime: number;
-  private restProgressTime: number;
+  private progressTime: number; // current - startTime
+  private timout: number; // delay
 
-  setStartTime(): void {
+  start(timeMs: number): void {
     this.startTime = ProgressTimer.getCurrentTime();
-    // console.log('StartTime', this.startTime);
+    this.timout = timeMs;
   }
 
-  setRestTime(timeMs: number): void {
-    this.restProgressTime = timeMs;
-    // console.log('RestTime', this.restProgressTime);
-  }
-
-  saveProgress(): void {
-    this.saveProgressTime = ProgressTimer.getCurrentTime() - this.startTime;
-    // console.log('Progress', this.saveProgressTime);
+  pause(): void {
+    this.progressTime = ProgressTimer.getCurrentTime() - this.startTime;
   }
 
   getRestTime(): number {
-    const rest = this.restProgressTime - this.saveProgressTime;
+    const rest = this.timout - this.progressTime;
     // console.log('GetRestTime', rest);
     return rest;
   }

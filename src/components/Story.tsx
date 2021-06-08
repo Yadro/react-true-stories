@@ -22,7 +22,7 @@ const Story: React.FC<IStoryProps> = props => {
 
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [pause, setPause] = useState<boolean>(false);
-  const timer = useRef<number>();
+  const timerId = useRef<number>();
   const timerObj = useRef<ProgressTimer>(new ProgressTimer());
 
   const changeActiveSlide = useCallback(
@@ -43,17 +43,16 @@ const Story: React.FC<IStoryProps> = props => {
   const startTimer = useCallback(
     // passing the current activeSlide to keep the it up to date
     (activeSlide: number, delayMs?: number) => {
-      if (timer.current) {
-        clearTimeout(timer.current);
+      if (timerId.current) {
+        clearTimeout(timerId.current);
       }
 
       if (activeSlide < storiesAmount) {
         const delay = delayMs || defaultDurationMs;
 
-        timerObj.current.setStartTime();
-        timerObj.current.setRestTime(delay);
+        timerObj.current.start(delay);
 
-        timer.current = window.setTimeout(() => {
+        timerId.current = window.setTimeout(() => {
           if (activeSlide < storiesAmount) {
             changeActiveSlide(1);
             startTimer(activeSlide + 1);
@@ -86,9 +85,9 @@ const Story: React.FC<IStoryProps> = props => {
   const handlePause = () => {
     setPause(true);
 
-    timerObj.current.saveProgress();
-    if (timer.current) {
-      clearTimeout(timer.current);
+    timerObj.current.pause();
+    if (timerId.current) {
+      clearTimeout(timerId.current);
     }
   };
 
